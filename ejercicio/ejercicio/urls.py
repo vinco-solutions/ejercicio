@@ -15,8 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from ejercicio.settings.views_auth import Login
+from knox import views as knox_views
+from knox.views import LoginView as KnoxLoginView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/', include("polls.api.urls")),
+    # path('', Login.as_view(), name='Login'),
+    path('', KnoxLoginView.as_view(), name = 'knox_login'),
+    path('logout/', knox_views.LogoutView.as_view(), name = 'knox_logout'),
+    path('logoutall/', knox_views.LogoutAllView.as_view(), name = 'knox_logoutall'),
 ]
