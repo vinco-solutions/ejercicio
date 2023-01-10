@@ -32,7 +32,9 @@ LOCAL_APPS = [
 ]
 
 THIRD_APPS = [
-    "rest_framework"
+    "rest_framework",
+    "rest_framework.authtoken",
+    'knox',
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
