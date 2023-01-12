@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from polls.models import Question
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.utils import timezone
+from polls.models import Question
 
 class question_serializer(serializers.ModelSerializer):
 
@@ -22,15 +24,32 @@ class question_serializer(serializers.ModelSerializer):
             return data
 
 
+# User Serializer
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "email")
 
+# Register Serializer
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "password", "email")
+        extra_kwargs = {"password":{"write_only":True}}
 
-class question_serializer_test(serializers.Serializer):
-    question_text = serializers.CharField(max_length=200)
-    pub_date = serializers.DateTimeField('date published')
-    
-    def validate_question_text(self,value):
-            if len(value)<=10:
-                raise serializers.ValidationError('Field with less than ten characters')
-            return value
+        def create(self, validate_data):
+            user = User.objects.create_user(validate_data["username"], validate_data["password"], validate_data["email"])
+            return user
+
+# Login Serializer
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Incorrect Credentials")
 
 
